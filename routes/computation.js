@@ -1,49 +1,42 @@
+// routes/computation.js
 const express = require('express');
-const app = express();
-const port = 3000;
+const router = express.Router();
 
-// Replace this with your actual ID or the last digit of it
-const lastDigitOfId = 2; // Example: last digit of your ID
+// Last digit of your ID determines which function to use
+const lastDigitOfId = 1;  // For example, this uses Math.log2
 
-// Math function list based on last digit of ID
+// Math functions based on ID's last digit
 const mathFunctions = {
-    0: Math.log,       // Natural logarithm
-    1: Math.log2,      // Base 2 logarithm
-    2: Math.cosh,      // Hyperbolic cosine
-    3: Math.floor,     // Rounds down to nearest integer
-    4: Math.sin,       // Sine
-    5: Math.cos,       // Cosine
-    6: Math.tan,       // Tangent
-    7: Math.exp,       // Exponential (e^x)
-    8: Math.sqrt,      // Square root
-    9: Math.abs        // Absolute value
+    0: Math.log,
+    1: Math.log2,
+    2: Math.cosh,
+    3: Math.floor,
+    4: Math.sin,
+    5: Math.cos,
+    6: Math.tan,
+    7: Math.exp,
+    8: Math.sqrt,
+    9: Math.abs
 };
 
-// Endpoint for computation
-app.get('/computation', (req, res) => {
-    // Check if x is provided as a query parameter, else generate a random value
+// Define the computation route
+router.get('/', (req, res) => {
+    // Get x from the query parameter, or generate a random value
     let x = req.query.x ? parseFloat(req.query.x) : Math.random() * 10;
-    
-    // Select the function based on last digit of ID
+
+    // Select the math function based on last digit of ID
     const selectedFunction = mathFunctions[lastDigitOfId];
-    
-    // Apply the selected function to x
+
+    // Apply the function to x and generate the result
     let y;
     try {
         y = selectedFunction(x);
     } catch (error) {
-        res.status(500).send('Error applying function: ' + error.message);
-        return;
+        return res.status(500).send('Error applying function: ' + error.message);
     }
 
-    // Create the response string
-    const response = `[${selectedFunction.name}] applied to [${x}] is [${y}]`;
-    
-    // Send response
-    res.send(response);
+    // Send the result in the required format
+    res.send(`[${selectedFunction.name}] applied to [${x}] is [${y}]`);
 });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+module.exports = router;
